@@ -17,7 +17,6 @@ export interface PluginDocsParameter<T> {
   dir?: string
   min?: number
   max?: number
-  children?: Record<string, PluginDocsParameter<unknown>>
   type:
     | "file"
     | "combo"
@@ -54,7 +53,11 @@ export interface PluginDocs<TPlugin> {
   orderAfters?: string[]
   url?: string
   params: {
-    [key in keyof ExtractPluginParams<TPlugin>]: PluginDocsParameter<ExtractPluginParams<TPlugin>[key]>
+    [key in keyof ExtractPluginParams<TPlugin>]: PluginDocsParameter<ExtractPluginParams<TPlugin>[key]> & {
+      parent?: keyof PluginDocs<TPlugin>["params"]
+    }
+  } & {
+    [key: string]: PluginDocsParameter<string>
   }
   commands: {
     [key in keyof ExtractPluginCommands<TPlugin>]: PluginCommandDocs<ExtractPluginCommands<TPlugin>[key]>

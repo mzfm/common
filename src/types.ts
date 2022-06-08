@@ -12,6 +12,6 @@ export interface MZFMPlugin<
   TCommands extends Record<string, MZFMCommand<any>>
 > {
   name: string
-  params: TParams
+  default_params: TParams
   commands: TCommands
 }

@@ -69,17 +69,16 @@ const getType = <T>(
 
 const addParams = (
   docs: string[],
-  params: Record<string, PluginDocsParameter<unknown>> | undefined,
+  params: Record<string, PluginDocsParameter<unknown> & { parent?: string }> | undefined,
   structs: Record<string, PluginStructDocs<unknown>>,
-  paramKey = "param",
-  parent?: string
+  paramKey = "param"
 ) => {
   if (!params) return
   for (const key in params) {
     const param = params[key]
     updateDocs(docs, paramKey, key)
     updateDocs(docs, "text", param.text)
-    updateDocs(docs, "parent", parent)
+    updateDocs(docs, "parent", param.parent)
     updateDocs(docs, "desc", param.description)
     const type = getType(param.type, structs)
     updateDocs(docs, "type", type)
@@ -95,7 +94,6 @@ const addParams = (
     updateDocs(docs, "min", param.min)
     updateDocs(docs, "max", param.max)
     docs.push("")
-    addParams(docs, param.children, structs, key)
   }
 }
 
