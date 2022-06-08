@@ -58,8 +58,6 @@ export interface PluginDocs<TPlugin> {
   url?: string
   params: {
     [key in keyof ExtractPluginParams<TPlugin>]: PluginDocsParameter<ExtractPluginParams<TPlugin>[key]>
-  } & {
-    [key: string]: PluginDocsParameter<string>
   }
   commands: {
     [key in keyof ExtractPluginCommands<TPlugin>]: PluginCommandDocs<ExtractPluginCommands<TPlugin>[key]>

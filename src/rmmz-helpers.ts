@@ -4,6 +4,9 @@ declare global {
   interface Array<T> {
     clone(): Array<T>
   }
+  interface String {
+    format(...args: unknown[]): string
+  }
 }
 
 declare module "rmmz" {

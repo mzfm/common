@@ -1,6 +1,7 @@
-import { PluginManager, PluginParameters } from "rmmz"
+import { PluginManager, PluginParameters, Scene_Boot } from "rmmz"
 import { MZFMCommand, MZFMInterpreter, MZFMPlugin } from "./types"
 import { MZFM } from "./global"
+import { overrideMethod } from "./utils"
 
 export const _parse = (s: unknown): unknown => {
   if (typeof s === "string" && s.length > 0) {
@@ -31,26 +32,13 @@ export const getContext = <T>(interpreter: MZFMInterpreter, ...keys: string[]): 
 
 export const registerCommand = async <T>(pluginName: string, key: string, command: MZFMCommand<T>) => {
   console.debug(`Registering command: ${key}`)
-  if (command.setGlobal) {
-    if (MZFM[key]) {
-      throw new Error(`Command ${key} already exists`)
-    }
-    MZFM[key] = command.run
+  if (command.initialize) {
+    await command.initialize(`${pluginName}:${key}`)
   }
-  try {
-    if (command.initialize) {
-      await command.initialize(`${pluginName}:${key}`)
-    }
-    PluginManager.registerCommand(pluginName, key, async function (this: MZFMInterpreter, args) {
-      const ctx = getContext(this, pluginName, key)
-      await command.run.call(this, command.skipParseArgs ? (args as unknown as T) : parseArgs(args), ctx)
-    })
-  } catch (e) {
-    if (command.setGlobal) {
-      delete MZFM[key]
-    }
-    throw e
-  }
+  PluginManager.registerCommand(pluginName, key, async function (this: MZFMInterpreter, args) {
+    const ctx = getContext(this, pluginName, key)
+    await command.run.call(this, command.skipParseArgs ? (args as unknown as T) : parseArgs(args), ctx)
+  })
 }
 
 export const registerPlugin = async <
@@ -61,6 +49,9 @@ export const registerPlugin = async <
 >(
   plugin: MZFMPlugin<TParams, TCommands>
 ): Promise<void> => {
+  let ready = false
+  // Wait in Scene_Boot for the plugin to be ready
+  overrideMethod(Scene_Boot, "isReady", (original) => ready && original())
   const { name, commands } = plugin
   if (MZFM.plugins[name]) {
     console.debug(`Plugin ${name} already registered. Skipped.`)
@@ -73,7 +64,7 @@ export const registerPlugin = async <
       await registerCommand(name, key, command)
     }
     if (plugin.initialize) {
-      await plugin.initialize()
+      await plugin.initialize.call(plugin)
     }
     MZFM.plugins[name] = plugin
     console.debug(`Plugin registered: ${name}`)
@@ -81,4 +72,5 @@ export const registerPlugin = async <
     console.error(e)
     delete MZFM.plugins[name]
   }
+  ready = true
 }

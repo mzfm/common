@@ -9,7 +9,6 @@ export interface MZFMInterpreter extends Game_Interpreter {
 export interface MZFMCommand<T = Record<string, never>, TContext = unknown> {
   initialize?: (key: string) => void | Promise<void>
   run: (this: MZFMInterpreter, args: T, ctx: Partial<TContext>) => void | Promise<void>
-  setGlobal?: boolean
   skipParseArgs?: boolean
 }
 

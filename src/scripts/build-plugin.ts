@@ -88,18 +88,19 @@ const addParams = (
     updateDocs(docs, "parent", param.parent)
     updateDocs(docs, "desc", param.description)
     const type = getType(param.type, structs)
+    const isString = type === "string" || type === undefined
     updateDocs(docs, "type", type)
     if (param.options) {
       for (const option of param.options) {
         if (typeof option === "string") {
-          updateDocs(docs, "option", option)
+          updateDocs(docs, "option", option, !isString)
         } else {
           updateDocs(docs, "option", option.text)
-          updateDocs(docs, "value", option.value, true)
+          updateDocs(docs, "value", option.value, !isString)
         }
       }
     }
-    updateDocs(docs, "default", param.default, true)
+    updateDocs(docs, "default", param.default, !isString)
     updateDocs(docs, "require", param.required ? "1" : "")
     updateDocs(docs, "dir", param.dir)
     updateDocs(docs, "min", param.min)
