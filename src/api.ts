@@ -75,6 +75,7 @@ export const registerPlugin = async <
   }
   console.debug(`Registering plugin: ${name}`)
   try {
+    plugin.params = getParameters(plugin, true)
     for (const key in commands) {
       const command = commands[key]
       await registerCommand(name, key, command)

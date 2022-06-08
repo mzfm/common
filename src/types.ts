@@ -19,7 +19,7 @@ export interface MZFMPlugin<
   TCommands extends Record<string, MZFMCommand<any>> = Record<string, MZFMCommand<any>>
 > {
   name: string
-  params?: TParams
+  params: TParams
   commands: TCommands
   initialize?: () => void | Promise<void>
 }
