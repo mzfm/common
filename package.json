@@ -1,0 +1,45 @@
+{
+  "name": "@mzfm/common",
+  "version": "1.0.0",
+  "description": "Base definitions for MZFM plugins.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "build-plugin": "dist/scripts/build-plugin.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "lint": "eslint --ext .js,.ts ./",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mzfm/common.git"
+  },
+  "keywords": [
+    "RPG Maker MZ"
+  ],
+  "author": "Vilja",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mzfm/common/issues"
+  },
+  "homepage": "https://github.com/mzfm/common#readme",
+  "dependencies": {
+    "@fal-works/esbuild-plugin-global-externals": "^2.1.2",
+    "chokidar": "^3.5.3",
+    "commander": "^9.3.0",
+    "esbuild": "^0.14.42"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.39",
+    "@typescript-eslint/eslint-plugin": "^5.27.0",
+    "@typescript-eslint/parser": "^5.27.0",
+    "eslint": "^8.17.0",
+    "prettier": "^2.6.2",
+    "rmmz": "github:niokasgami/rpg-maker-mz-typescript",
+    "typescript": "^4.7.3"
+  }
+}
