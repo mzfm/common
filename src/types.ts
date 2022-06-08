@@ -6,7 +6,7 @@ export interface MZFMInterpreter extends Game_Interpreter {
 
 // Context is local to the Game_Interpreter.
 export interface MZFMCommand<T = Record<string, never>, TContext = unknown> {
-  initialize: (commandName: string) => boolean | Promise<boolean>
+  initialize?: (commandName: string) => void | Promise<void>
   run: (this: MZFMInterpreter, ctx: Partial<TContext>, args: T) => void | Promise<void>
   setGlobal?: boolean
   skipParseArgs?: boolean
@@ -21,4 +21,5 @@ export interface MZFMPlugin<
   name: string
   default_params: TParams
   commands: TCommands
+  initialize?: () => void | Promise<void>
 }

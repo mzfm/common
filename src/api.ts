@@ -37,8 +37,8 @@ export const registerCommand = async <T>(pluginName: string, key: string, comman
     MZFM[key] = command.run
   }
   try {
-    if (command.initialize && !(await command.initialize(key))) {
-      throw new Error(`Command ${key} failed to initialize`)
+    if (command.initialize) {
+      await command.initialize(key)
     }
     PluginManager.registerCommand(pluginName, key, function (this: MZFMInterpreter, args) {
       const ctx = getContext(this, key)
@@ -52,14 +52,14 @@ export const registerCommand = async <T>(pluginName: string, key: string, comman
   }
 }
 
-export const registerPlugin = <
+export const registerPlugin = async <
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TParams extends Record<string, any>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TCommands extends Record<string, MZFMCommand<any>>
 >(
   plugin: MZFMPlugin<TParams, TCommands>
-): void => {
+): Promise<void> => {
   const { name, commands } = plugin
   if (MZFM.plugins[name]) {
     console.debug(`Plugin ${name} already registered. Skipped.`)
@@ -69,7 +69,10 @@ export const registerPlugin = <
   try {
     for (const key in commands) {
       const command = commands[key]
-      registerCommand(name, key, command)
+      await registerCommand(name, key, command)
+    }
+    if (plugin.initialize) {
+      await plugin.initialize()
     }
     MZFM.plugins[name] = plugin
     console.debug(`Plugin registered: ${name}`)
