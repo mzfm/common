@@ -1,5 +1,5 @@
 import { PluginManager, PluginParameters } from "rmmz"
-import { MZFMCommand, MZFMPlugin } from "./types"
+import { MZFMCommand, MZFMInterpreter, MZFMPlugin } from "./types"
 import { MZFM } from "./global"
 
 export const _parse = (s: unknown): unknown => {
@@ -22,6 +22,12 @@ export const _parse = (s: unknown): unknown => {
 }
 export const parseArgs = <T>(args: PluginParameters): T => _parse(args) as T
 
+export const getContext = <T>(interpreter: MZFMInterpreter, key: string): Partial<T> => {
+  const contexts = (interpreter._mzfmContexts = interpreter._mzfmContexts || {})
+  const ctx = (contexts[key] = contexts[key] || {})
+  return ctx as T
+}
+
 export const registerCommand = async <T>(pluginName: string, key: string, command: MZFMCommand<T>) => {
   console.debug(`Registering command: ${key}`)
   if (command.setGlobal) {
@@ -31,11 +37,12 @@ export const registerCommand = async <T>(pluginName: string, key: string, comman
     MZFM[key] = command.run
   }
   try {
-    if (command.initialize && !(await command.initialize())) {
+    if (command.initialize && !(await command.initialize(key))) {
       throw new Error(`Command ${key} failed to initialize`)
     }
-    PluginManager.registerCommand(pluginName, key, function (this: unknown, args) {
-      command.run.call(this, command.skipParseArgs ? (args as unknown as T) : parseArgs(args))
+    PluginManager.registerCommand(pluginName, key, function (this: MZFMInterpreter, args) {
+      const ctx = getContext(this, key)
+      command.run.call(this, ctx, command.skipParseArgs ? (args as unknown as T) : parseArgs(args))
     })
   } catch (e) {
     if (command.setGlobal) {

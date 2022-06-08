@@ -1,6 +1,13 @@
-export interface MZFMCommand<T = Record<string, never>> {
-  initialize: () => boolean | Promise<boolean>
-  run: (args: T) => void | Promise<void>
+import { Game_Interpreter } from "rmmz"
+
+export interface MZFMInterpreter extends Game_Interpreter {
+  _mzfmContexts?: Record<string, unknown>
+}
+
+// Context is local to the Game_Interpreter.
+export interface MZFMCommand<T = Record<string, never>, TContext = unknown> {
+  initialize: (commandName: string) => boolean | Promise<boolean>
+  run: (this: MZFMInterpreter, ctx: Partial<TContext>, args: T) => void | Promise<void>
   setGlobal?: boolean
   skipParseArgs?: boolean
 }
