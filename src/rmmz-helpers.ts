@@ -1,4 +1,4 @@
-import _ from "rmmz"
+import _, { Window_Options } from "rmmz"
 
 declare global {
   interface Array<T> {
@@ -25,4 +25,7 @@ declare module "rmmz" {
     public setup(list: Game_Command[], eventId: number): void
     public setupChoices(params: [string[], number, number, number, number]): void
   }
+  export class Window_Options<T = unknown> extends _.Window_Command<T> {}
 }
+
+export const Window_Options_ = Window_Options as new (...args: unknown[]) => Window_Options

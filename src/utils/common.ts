@@ -22,3 +22,13 @@ export const overrideMethod = <T, TKey extends keyof T>(
 export const globalEval = <T>(code: string): T => eval(code) as T
 
 export const uuid = (): string => randomBytes(32).toString("hex")
+
+export const waitUntil = (condition: () => boolean, period = 50): Promise<void> =>
+  new Promise((resolve) => {
+    const interval = setInterval(() => {
+      if (condition()) {
+        clearInterval(interval)
+        resolve()
+      }
+    }, period)
+  })
