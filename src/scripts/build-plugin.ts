@@ -246,12 +246,22 @@ const main = async () => {
       fs.copyFileSync(outfile, path.join(copyTo, path.basename(outfile)))
     }
   }
-  await build()
+  try {
+    await build()
+  } catch (e) {
+    console.error(e)
+  }
   const watch = opts.watch
   if (watch) {
     console.log("Watching for changes...")
     const watcher = chokidar.watch([path.join(projectDir, "src")])
-    watcher.on("change", build)
+    watcher.on("change", async () => {
+      try {
+        await build()
+      } catch (e) {
+        console.error(e)
+      }
+    })
   }
 }
 
