@@ -22,7 +22,15 @@ export const _parse = (s: unknown): unknown => {
 }
 export const parseArgs = <T>(args: PluginParameters): T => _parse(args) as T
 
-export const getContext = <T>(interpreter: MZFMInterpreter, key: string): Partial<T> => {
+export const getParameters = <TParams>(plugin: MZFMPlugin<TParams>, force = false): TParams => {
+  if (force || !plugin.params) {
+    plugin.params = parseArgs<TParams>(PluginManager.parameters(plugin.name))
+  }
+  return plugin.params
+}
+
+export const getContext = <T>(interpreter: MZFMInterpreter, ...keys: string[]): Partial<T> => {
+  const key = keys.join(":")
   const contexts = (interpreter._mzfmContexts = interpreter._mzfmContexts || {})
   const ctx = (contexts[key] = contexts[key] || {})
   return ctx as T
@@ -38,11 +46,11 @@ export const registerCommand = async <T>(pluginName: string, key: string, comman
   }
   try {
     if (command.initialize) {
-      await command.initialize(key)
+      await command.initialize(`${pluginName}:${key}`)
     }
-    PluginManager.registerCommand(pluginName, key, function (this: MZFMInterpreter, args) {
-      const ctx = getContext(this, key)
-      command.run.call(this, ctx, command.skipParseArgs ? (args as unknown as T) : parseArgs(args))
+    PluginManager.registerCommand(pluginName, key, async function (this: MZFMInterpreter, args) {
+      const ctx = getContext(this, pluginName, key)
+      await command.run.call(this, command.skipParseArgs ? (args as unknown as T) : parseArgs(args), ctx)
     })
   } catch (e) {
     if (command.setGlobal) {

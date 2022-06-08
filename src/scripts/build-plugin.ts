@@ -130,7 +130,10 @@ const makeStructDocs = (structs: Record<string, PluginStructDocs<unknown>>): (st
 const makeDocs = <T>(project: PluginDocs<T>): (string | undefined)[] => {
   const docs: string[] = [""]
   updateDocs(docs, "plugindesc", project.description)
-  updateDocs(docs, "author", project.author)
+  if (project.author) {
+    const author = project.author.split("<")[0]
+    updateDocs(docs, "author", author)
+  }
   updateDocs(docs, "target", project.targets ? project.targets.join(" ") : "MZ")
   updateDocs(docs, "url", project.url)
   updateDocs(docs, "base", project.basePluginName)
@@ -171,12 +174,12 @@ const main = async () => {
 
   const projectName = packageJson.name
 
-  const docsfile = path.join(projectDir, "dist", "docs.js")
   const buildOptions: BuildOptions = {
     entryPoints: [path.join(projectDir, "src", "index.ts")],
     bundle: true,
     watch: false,
     target: "esnext",
+    platform: "node",
     external: ["rmmz"],
     plugins: [
       globalExternals({
@@ -189,8 +192,8 @@ const main = async () => {
   }
   const docsBuildOptions: BuildOptions = Object.assign({}, buildOptions, {
     entryPoints: [path.join(projectDir, "src", "docs.ts")],
-    outfile: docsfile,
     format: "cjs",
+    outfile: "",
     plugins: [
       globalExternals({
         rmmz: {
@@ -200,10 +203,16 @@ const main = async () => {
       }),
     ],
   })
+  let buildIndex = 0
   const build = async () => {
     console.log(`Building plugin for project ${projectName}`)
 
     // Build docs
+    if (docsBuildOptions.outfile && fs.existsSync(docsBuildOptions.outfile)) {
+      fs.unlinkSync(docsBuildOptions.outfile)
+    }
+    const docsfile = path.join(projectDir, "dist", `docs${buildIndex++}.js`)
+    docsBuildOptions.outfile = docsfile
     await esbuild.build(docsBuildOptions)
     const project = (await import(docsfile)).default as PluginDocs<unknown>
     const docs: (string | undefined)[] = [makeComments(project.copyright), ...makeDocs(project)]

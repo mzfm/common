@@ -35,7 +35,7 @@ export interface PluginStructDocs<T> {
     [key in keyof T]: PluginDocsParameter<T[key]>
   }
 }
-export interface PluginCommandDocs<TCommand> {
+export interface PluginCommandDocs<TCommand = Record<string, never>> {
   description?: string
   args: {
     [key in keyof ExtractCommandArgs<TCommand>]: PluginDocsParameter<ExtractCommandArgs<TCommand>[key]>

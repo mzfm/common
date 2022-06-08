@@ -6,20 +6,21 @@ export interface MZFMInterpreter extends Game_Interpreter {
 
 // Context is local to the Game_Interpreter.
 export interface MZFMCommand<T = Record<string, never>, TContext = unknown> {
-  initialize?: (commandName: string) => void | Promise<void>
-  run: (this: MZFMInterpreter, ctx: Partial<TContext>, args: T) => void | Promise<void>
+  initialize?: (key: string) => void | Promise<void>
+  run: (this: MZFMInterpreter, args: T, ctx: Partial<TContext>) => void | Promise<void>
   setGlobal?: boolean
   skipParseArgs?: boolean
 }
 
 export interface MZFMPlugin<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  TParams extends Record<string, any>,
+  TParams extends Readonly<Record<string, any>> = Readonly<Record<string, unknown>>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  TCommands extends Record<string, MZFMCommand<any>>
+  TCommands extends Record<string, MZFMCommand<any>> = Record<string, MZFMCommand<unknown>>
 > {
   name: string
   default_params: TParams
+  params?: TParams
   commands: TCommands
   initialize?: () => void | Promise<void>
 }
