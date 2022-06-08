@@ -8,7 +8,7 @@
     "build-plugin": "dist/scripts/build-plugin.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && chmod +x dist/scripts/*.js",
     "dev": "tsc -w",
     "lint": "eslint --ext .js,.ts ./",
     "prettier": "prettier --write ./src",

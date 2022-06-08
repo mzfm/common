@@ -34,16 +34,23 @@ ${lines.map((line) => ` * ${line}`).join("\n")}
 }
 
 const updateDocs = (docs: string[], key: string, value?: unknown, stringify = false) => {
-  if (value) {
-    docs.push(`@${key} ${stringify ? JSON.stringify(value) : value}`)
+  if (!value) return
+  if (stringify && typeof value === "string") {
+    try {
+      JSON.parse(value)
+      stringify = false
+    } catch {
+      stringify = true
+    }
   }
+  docs.push(`@${key} ${stringify ? JSON.stringify(value) : value}`)
 }
 
 const getType = <T>(
   type: PluginDocsParameter<T>["type"],
   structs: Record<string, PluginStructDocs<unknown>>
-): string => {
-  if (typeof type === "string") {
+): string | undefined => {
+  if (!type || typeof type === "string") {
     return type
   }
   const isArray = Array.isArray(type)
@@ -69,7 +76,7 @@ const getType = <T>(
 
 const addParams = (
   docs: string[],
-  params: Record<string, PluginDocsParameter<unknown> & { parent?: string }> | undefined,
+  params: Record<string, PluginDocsParameter<unknown>> | undefined,
   structs: Record<string, PluginStructDocs<unknown>>,
   paramKey = "param"
 ) => {
@@ -84,8 +91,12 @@ const addParams = (
     updateDocs(docs, "type", type)
     if (param.options) {
       for (const option of param.options) {
-        updateDocs(docs, "option", option.text)
-        updateDocs(docs, "value", option.value, true)
+        if (typeof option === "string") {
+          updateDocs(docs, "option", option)
+        } else {
+          updateDocs(docs, "option", option.text)
+          updateDocs(docs, "value", option.value, true)
+        }
       }
     }
     updateDocs(docs, "default", param.default, true)

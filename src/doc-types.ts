@@ -9,15 +9,18 @@ export interface PluginDocsParameter<T> {
   text?: string
   description?: string
   default?: T
-  options?: {
-    text: string
-    value: T
-  }[]
+  options?: (
+    | {
+        text: string
+        value: T
+      }
+    | string
+  )[]
   required?: boolean
   dir?: string
   min?: number
   max?: number
-  type:
+  type?:
     | "file"
     | "combo"
     | "select"
@@ -27,6 +30,7 @@ export interface PluginDocsParameter<T> {
     | [typeof Number | typeof Boolean | typeof String]
     | PluginStructDocs<T>
     | [PluginStructDocs<ExtractArrayElement<T>>]
+  parent?: string
 }
 
 export interface PluginStructDocs<T> {
@@ -53,9 +57,7 @@ export interface PluginDocs<TPlugin> {
   orderAfters?: string[]
   url?: string
   params: {
-    [key in keyof ExtractPluginParams<TPlugin>]: PluginDocsParameter<ExtractPluginParams<TPlugin>[key]> & {
-      parent?: keyof PluginDocs<TPlugin>["params"]
-    }
+    [key in keyof ExtractPluginParams<TPlugin>]: PluginDocsParameter<ExtractPluginParams<TPlugin>[key]>
   } & {
     [key: string]: PluginDocsParameter<string>
   }

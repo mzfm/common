@@ -14,12 +14,11 @@ export interface MZFMCommand<T = Record<string, never>, TContext = unknown> {
 
 export interface MZFMPlugin<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  TParams extends Readonly<Record<string, any>> = Readonly<Record<string, unknown>>,
+  TParams extends Readonly<Record<string, any>> = Readonly<Record<string, any>>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  TCommands extends Record<string, MZFMCommand<any>> = Record<string, MZFMCommand<unknown>>
+  TCommands extends Record<string, MZFMCommand<any>> = Record<string, MZFMCommand<any>>
 > {
   name: string
-  default_params: TParams
   params?: TParams
   commands: TCommands
   initialize?: () => void | Promise<void>

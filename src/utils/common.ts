@@ -16,3 +16,6 @@ export const overrideMethod = <T, TKey extends keyof T>(
     return fn.call(this, original.bind(this) as OmitThisParameter<MethodType<T, TKey>>, ...args)
   }
 }
+
+
+export const globalEval = <T>(code: string): T => eval(code) as T

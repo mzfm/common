@@ -3,7 +3,7 @@ import { MZFMCommand, MZFMInterpreter, MZFMPlugin } from "./types"
 import { MZFM } from "./global"
 
 export const _parse = (s: unknown): unknown => {
-  if (typeof s === "string") {
+  if (typeof s === "string" && s.length > 0) {
     try {
       s = JSON.parse(s)
     } catch {
