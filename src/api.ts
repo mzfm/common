@@ -38,11 +38,16 @@ export const registerCommand = async <T>(
     if (command.initialize && !(await command.initialize())) {
       throw new Error(`Command ${key} failed to initialize`)
     }
-    PluginManager.registerCommand(pluginName, key, (args) => {
-      command.run(
-        command.skipParseArgs ? (args as unknown as T) : parseArgs(args)
-      )
-    })
+    PluginManager.registerCommand(
+      pluginName,
+      key,
+      function (this: unknown, args) {
+        command.run.call(
+          this,
+          command.skipParseArgs ? (args as unknown as T) : parseArgs(args)
+        )
+      }
+    )
   } catch (e) {
     if (command.setGlobal) {
       delete MZFM[key]
