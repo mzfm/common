@@ -1,5 +1,6 @@
-import { StorageManager } from "rmmz"
+import { DataManager, SavefileContent, StorageManager } from "rmmz"
 import { MZFMCommand, MZFMPlugin } from "./types"
+import { overrideMethod } from "./utils"
 
 declare global {
   // eslint-disable-next-line no-var
@@ -8,14 +9,30 @@ declare global {
       [name: string]: MZFMPlugin<Record<string, unknown>, Record<string, MZFMCommand<unknown>>>
     }
     _globalVariables: Record<string, Record<string, unknown>>
+    gameState: Record<string, unknown>
     [key: string]: unknown
   }
 }
 
-export const MZFM = globalThis.MZFM || {
-  plugins: {},
-  _globalVariables: {},
-}
+export const MZFM =
+  globalThis.MZFM ||
+  (() => {
+    const { makeSaveContents, extractSaveContents } = DataManager
+    DataManager.makeSaveContents = () =>
+      Object.assign(makeSaveContents(), {
+        mzfmState: MZFM.gameState,
+      })
+    DataManager.extractSaveContents = (contents) => {
+      extractSaveContents(contents)
+      MZFM.gameState = (contents as { mzfmState?: Record<string, unknown> }).mzfmState || {}
+    }
+
+    return {
+      plugins: {},
+      gameState: {},
+      _globalVariables: {},
+    }
+  })()
 
 if (!globalThis.MZFM) {
   globalThis.MZFM = MZFM
@@ -44,9 +61,6 @@ export const getGlobal = async <T>(
       : MZFM._globalVariables[namespace]
   return globalVariables[key] as T
 }
-
-export const getGlobalSync = <T>(key: string, namespace = MZFM_GLOBAL_FILENAME): T | undefined =>
-  MZFM._globalVariables[namespace] && (MZFM._globalVariables[namespace][key] as T)
 
 export const setGlobal = async <T>(
   key: string,
