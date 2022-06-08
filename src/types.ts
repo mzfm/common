@@ -1,4 +1,4 @@
-export interface MZFMCommand<T> {
+export interface MZFMCommand<T = Record<string, never>> {
   initialize: () => boolean | Promise<boolean>
   run: (args: T) => void | Promise<void>
   setGlobal?: boolean

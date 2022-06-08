@@ -6,6 +6,7 @@ export const overrideMethod = <T, TKey extends keyof T>(
   obj: new () => T,
   methodName: TKey,
   fn: (
+    this: T,
     original: OmitThisParameter<MethodType<T, TKey>>,
     ...args: Parameters<MethodType<T, TKey>>
   ) => ReturnType<MethodType<T, TKey>>
