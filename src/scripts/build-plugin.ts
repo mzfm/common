@@ -8,12 +8,7 @@ import { program } from "commander"
 import esbuild, { BuildOptions } from "esbuild"
 import { globalExternals } from "@fal-works/esbuild-plugin-global-externals"
 
-import {
-  PluginCommandDocs,
-  PluginDocs,
-  PluginDocsParameter,
-  PluginStructDocs,
-} from ".."
+import { PluginCommandDocs, PluginDocs, PluginDocsParameter, PluginStructDocs } from ".."
 
 const findProjectDir = (dir: string): string | null => {
   if (dir === "/") {
@@ -26,10 +21,7 @@ const findProjectDir = (dir: string): string | null => {
   return findProjectDir(path.dirname(dir))
 }
 
-const makeComments = (
-  lines: string | string[] | undefined,
-  title = ""
-): string | undefined => {
+const makeComments = (lines: string | string[] | undefined, title = ""): string | undefined => {
   if (!lines) {
     return undefined
   }
@@ -41,12 +33,7 @@ ${lines.map((line) => ` * ${line}`).join("\n")}
  */`
 }
 
-const updateDocs = (
-  docs: string[],
-  key: string,
-  value?: unknown,
-  stringify = false
-) => {
+const updateDocs = (docs: string[], key: string, value?: unknown, stringify = false) => {
   if (value) {
     docs.push(`@${key} ${stringify ? JSON.stringify(value) : value}`)
   }
@@ -127,9 +114,7 @@ const addCommands = (
   }
 }
 
-const makeStructDocs = (
-  structs: Record<string, PluginStructDocs<unknown>>
-): (string | undefined)[] => {
+const makeStructDocs = (structs: Record<string, PluginStructDocs<unknown>>): (string | undefined)[] => {
   const keys = Object.keys(structs)
   if (keys.length === 0) return []
   const result: (string | undefined)[] = []
@@ -223,16 +208,9 @@ const main = async () => {
     // Build docs
     await esbuild.build(docsBuildOptions)
     const project = (await import(docsfile)).default as PluginDocs<unknown>
-    const docs: (string | undefined)[] = [
-      makeComments(project.copyright),
-      ...makeDocs(project),
-    ]
+    const docs: (string | undefined)[] = [makeComments(project.copyright), ...makeDocs(project)]
 
-    const outfile = path.join(
-      projectDir,
-      "dist",
-      `${project.name.replace("/", "-")}.js`
-    )
+    const outfile = path.join(projectDir, "dist", `${project.name.replace("/", "-")}.js`)
     buildOptions.outfile = outfile
     buildOptions.banner = {
       js: docs.filter((x) => x !== undefined).join("\n\n") + "\n",

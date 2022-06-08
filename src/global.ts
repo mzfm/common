@@ -4,10 +4,7 @@ declare global {
   // eslint-disable-next-line no-var
   var MZFM: {
     plugins: {
-      [name: string]: MZFMPlugin<
-        Record<string, unknown>,
-        Record<string, MZFMCommand<unknown>>
-      >
+      [name: string]: MZFMPlugin<Record<string, unknown>, Record<string, MZFMCommand<unknown>>>
     }
     [key: string]: unknown
   }

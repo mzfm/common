@@ -2,12 +2,8 @@ import { MZFMCommand, MZFMPlugin } from "./types"
 
 type ExtractArrayElement<T> = T extends (infer TElement)[] ? TElement : never
 type ExtractCommandArgs<T> = T extends MZFMCommand<infer TArgs> ? TArgs : never
-type ExtractPluginParams<T> = T extends MZFMPlugin<infer TParams, infer _TCommands>
-  ? TParams
-  : never
-type ExtractPluginCommands<T> = T extends MZFMPlugin<infer _TParams, infer TCommands>
-  ? TCommands
-  : never
+type ExtractPluginParams<T> = T extends MZFMPlugin<infer TParams, infer _TCommands> ? TParams : never
+type ExtractPluginCommands<T> = T extends MZFMPlugin<infer _TParams, infer TCommands> ? TCommands : never
 
 export interface PluginDocsParameter<T> {
   text?: string
@@ -43,9 +39,7 @@ export interface PluginStructDocs<T> {
 export interface PluginCommandDocs<TCommand> {
   description?: string
   args: {
-    [key in keyof ExtractCommandArgs<TCommand>]: PluginDocsParameter<
-      ExtractCommandArgs<TCommand>[key]
-    >
+    [key in keyof ExtractCommandArgs<TCommand>]: PluginDocsParameter<ExtractCommandArgs<TCommand>[key]>
   }
 }
 
@@ -60,14 +54,10 @@ export interface PluginDocs<TPlugin> {
   orderAfters?: string[]
   url?: string
   params: {
-    [key in keyof ExtractPluginParams<TPlugin>]: PluginDocsParameter<
-      ExtractPluginParams<TPlugin>[key]
-    >
+    [key in keyof ExtractPluginParams<TPlugin>]: PluginDocsParameter<ExtractPluginParams<TPlugin>[key]>
   }
   commands: {
-    [key in keyof ExtractPluginCommands<TPlugin>]: PluginCommandDocs<
-      ExtractPluginCommands<TPlugin>[key]
-    >
+    [key in keyof ExtractPluginCommands<TPlugin>]: PluginCommandDocs<ExtractPluginCommands<TPlugin>[key]>
   }
   copyright?: string
   helpText?: string

@@ -11,7 +11,7 @@
     "build": "tsc",
     "dev": "tsc -w",
     "lint": "eslint --ext .js,.ts ./",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier": "prettier --write ./src",
     "prepare": "npm run build"
   },
   "files": [
@@ -41,6 +41,7 @@
     "@typescript-eslint/eslint-plugin": "^5.27.0",
     "@typescript-eslint/parser": "^5.27.0",
     "eslint": "^8.17.0",
+    "eslint-config-prettier": "^8.5.0",
     "prettier": "^2.6.2",
     "rmmz": "github:niokasgami/rpg-maker-mz-typescript",
     "typescript": "^4.7.3"

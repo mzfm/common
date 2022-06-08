@@ -20,8 +20,6 @@ declare module "rmmz" {
     public _indent: number
     public _branch: Record<number, number>
     public setup(list: Game_Command[], eventId: number): void
-    public setupChoices(
-      params: [string[], number, number, number, number]
-    ): void
+    public setupChoices(params: [string[], number, number, number, number]): void
   }
 }

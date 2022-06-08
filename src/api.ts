@@ -22,11 +22,7 @@ export const _parse = (s: unknown): unknown => {
 }
 export const parseArgs = <T>(args: PluginParameters): T => _parse(args) as T
 
-export const registerCommand = async <T>(
-  pluginName: string,
-  key: string,
-  command: MZFMCommand<T>
-) => {
+export const registerCommand = async <T>(pluginName: string, key: string, command: MZFMCommand<T>) => {
   console.debug(`Registering command: ${key}`)
   if (command.setGlobal) {
     if (MZFM[key]) {
@@ -38,16 +34,9 @@ export const registerCommand = async <T>(
     if (command.initialize && !(await command.initialize())) {
       throw new Error(`Command ${key} failed to initialize`)
     }
-    PluginManager.registerCommand(
-      pluginName,
-      key,
-      function (this: unknown, args) {
-        command.run.call(
-          this,
-          command.skipParseArgs ? (args as unknown as T) : parseArgs(args)
-        )
-      }
-    )
+    PluginManager.registerCommand(pluginName, key, function (this: unknown, args) {
+      command.run.call(this, command.skipParseArgs ? (args as unknown as T) : parseArgs(args))
+    })
   } catch (e) {
     if (command.setGlobal) {
       delete MZFM[key]
