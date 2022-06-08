@@ -4,4 +4,4 @@ Base definitions for MZFM plugins.
 
 ## License
 
-[MIT License](./LICENSE)
+The [MIT License](./LICENSE).

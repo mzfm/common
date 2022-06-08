@@ -57,12 +57,12 @@ export const registerCommand = async <T>(
 }
 
 export const registerPlugin = <
-  TPlugin extends MZFMPlugin<
-    Record<string, unknown>,
-    Record<string, MZFMCommand<unknown>>
-  >
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  TParams extends Record<string, any>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  TCommands extends Record<string, MZFMCommand<any>>
 >(
-  plugin: TPlugin
+  plugin: MZFMPlugin<TParams, TCommands>
 ): void => {
   const { name, commands } = plugin
   if (MZFM.plugins[name]) {

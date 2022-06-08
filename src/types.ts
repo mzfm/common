@@ -6,8 +6,10 @@ export interface MZFMCommand<T> {
 }
 
 export interface MZFMPlugin<
-  TParams extends Record<string, unknown>,
-  TCommands extends Record<string, unknown>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  TParams extends Record<string, any>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  TCommands extends Record<string, MZFMCommand<any>>
 > {
   name: string
   params: TParams

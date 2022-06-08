@@ -14,6 +14,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "npm run build"
   },
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mzfm/common.git"
@@ -21,7 +24,7 @@
   "keywords": [
     "RPG Maker MZ"
   ],
-  "author": "Vilja",
+  "author": "Vilja <i@vilja.me>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/mzfm/common/issues"

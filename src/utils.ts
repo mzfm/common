@@ -1,20 +1,30 @@
-export const overrideMethod = <
+export type MethodType<T, TKey extends keyof T> = T[TKey] extends (
+  this: T,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  T extends { prototype: { [key: string]: (...args: any) => unknown } },
-  TKey extends keyof T["prototype"]
->(
-  obj: T,
-  methodName: string,
+  ...args: any[]
+) => // eslint-disable-next-line @typescript-eslint/no-explicit-any
+any
+  ? T[TKey]
+  : never
+
+export const overrideMethod = <T, TKey extends keyof T>(
+  obj: new () => T,
+  methodName: TKey,
   fn: (
-    original: T["prototype"][TKey],
-    ...args: Parameters<T["prototype"][TKey]>
-  ) => ReturnType<T["prototype"][TKey]>
+    original: OmitThisParameter<MethodType<T, TKey>>,
+    ...args: Parameters<MethodType<T, TKey>>
+  ) => ReturnType<MethodType<T, TKey>>
 ) => {
-  const original = obj.prototype[methodName]
-  obj.prototype[methodName] = function (
+  const original = obj.prototype[methodName] as MethodType<T, TKey>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ;(obj.prototype[methodName] as any) = function (
     this: T,
-    ...args: Parameters<T["prototype"][TKey]>
+    ...args: Parameters<MethodType<T, TKey>>
   ) {
-    return fn.call(this, original.bind(this) as T["prototype"][TKey], ...args)
+    return fn.call(
+      this,
+      original.bind(this) as OmitThisParameter<MethodType<T, TKey>>,
+      ...args
+    )
   }
 }

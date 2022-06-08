@@ -1,4 +1,4 @@
-import { MZFMPlugin } from "./types"
+import { MZFMCommand, MZFMPlugin } from "./types"
 
 declare global {
   // eslint-disable-next-line no-var
@@ -6,7 +6,7 @@ declare global {
     plugins: {
       [name: string]: MZFMPlugin<
         Record<string, unknown>,
-        Record<string, unknown>
+        Record<string, MZFMCommand<unknown>>
       >
     }
     [key: string]: unknown
