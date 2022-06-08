@@ -1,4 +1,5 @@
-import { Game_Interpreter } from "rmmz"
+import { Game_Interpreter, PluginManager } from "rmmz"
+import { parseArgs } from "./api"
 
 export interface MZFMInterpreter extends Game_Interpreter {
   _mzfmContexts?: Record<string, unknown>
@@ -12,14 +13,20 @@ export interface MZFMCommand<T = Record<string, never>, TContext = unknown> {
   skipParseArgs?: boolean
 }
 
-export interface MZFMPlugin<
+export class MZFMPlugin<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TParams extends Readonly<Record<string, any>> = Readonly<Record<string, any>>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TCommands extends Record<string, MZFMCommand<any>> = Record<string, MZFMCommand<any>>
 > {
-  name: string
-  params: TParams
-  commands: TCommands
-  initialize?: () => void | Promise<void>
+  private _params?: TParams
+  constructor(
+    public name: string,
+    public commands: TCommands,
+    public initialize?: () => void | Promise<void>
+  ) {}
+
+  get params(): TParams {
+    return this._params || (this._params = parseArgs<TParams>(PluginManager.parameters(this.name)))
+  }
 }

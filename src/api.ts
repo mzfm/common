@@ -22,13 +22,6 @@ export const _parse = (s: unknown): unknown => {
 }
 export const parseArgs = <T>(args: PluginParameters): T => _parse(args) as T
 
-export const getParameters = <TParams>(plugin: MZFMPlugin<TParams>, force = false): TParams => {
-  if (force || !plugin.params) {
-    plugin.params = parseArgs<TParams>(PluginManager.parameters(plugin.name))
-  }
-  return plugin.params
-}
-
 export const getContext = <T>(interpreter: MZFMInterpreter, ...keys: string[]): Partial<T> => {
   const key = keys.join(":")
   const contexts = (interpreter._mzfmContexts = interpreter._mzfmContexts || {})
@@ -75,7 +68,6 @@ export const registerPlugin = async <
   }
   console.debug(`Registering plugin: ${name}`)
   try {
-    plugin.params = getParameters(plugin, true)
     for (const key in commands) {
       const command = commands[key]
       await registerCommand(name, key, command)
