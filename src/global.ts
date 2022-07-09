@@ -1,6 +1,5 @@
-import { DataManager, SavefileContent, StorageManager } from "rmmz"
+import { DataManager, StorageManager } from "rmmz"
 import { MZFMCommand, MZFMPlugin } from "./types"
-import { overrideMethod } from "./utils"
 
 declare global {
   // eslint-disable-next-line no-var
