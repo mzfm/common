@@ -8,7 +8,7 @@ import { program } from "commander"
 import esbuild, { BuildOptions } from "esbuild"
 import { globalExternals } from "@fal-works/esbuild-plugin-global-externals"
 
-import { PluginCommandDocs, PluginDocs, PluginDocsParameter, PluginStructDocs } from ".."
+import { PluginCommandDocs, PluginDocs, PluginDocsParameter, PluginStructDocs } from "../docs"
 
 const findProjectDir = (dir: string): string | null => {
   if (dir === "/") {
@@ -187,10 +187,12 @@ const main = async () => {
 
   const buildOptions: BuildOptions = {
     entryPoints: [path.join(projectDir, "src", "index.ts")],
+    format: "iife",
     bundle: true,
     watch: false,
     target: "esnext",
     platform: "node",
+    treeShaking: true,
     external: ["rmmz"],
     plugins: [
       globalExternals({
@@ -202,9 +204,10 @@ const main = async () => {
     ],
   }
   const docsBuildOptions: BuildOptions = Object.assign({}, buildOptions, {
-    entryPoints: [path.join(projectDir, "src", "docs.ts")],
+    entryPoints: [path.join(projectDir, "src", "docs")],
     format: "cjs",
     outfile: "",
+    platform: "node",
     plugins: [
       globalExternals({
         rmmz: {
@@ -231,7 +234,7 @@ const main = async () => {
     const outfile = path.join(projectDir, "dist", `${project.name.replace("/", "-")}.js`)
     buildOptions.outfile = outfile
     buildOptions.banner = {
-      js: docs.filter((x) => x !== undefined).join("\n\n") + "\n",
+      js: docs.filter((x) => x !== undefined).join("\n\n"),
     }
 
     await esbuild.build(buildOptions)

@@ -1,5 +1,6 @@
 import { DataManager, StorageManager } from "rmmz"
 import { MZFMCommand, MZFMPlugin } from "./types"
+import { isRM } from "./utils"
 
 declare global {
   // eslint-disable-next-line no-var
@@ -16,14 +17,16 @@ declare global {
 export const MZFM =
   globalThis.MZFM ||
   (() => {
-    const { makeSaveContents, extractSaveContents } = DataManager
-    DataManager.makeSaveContents = () =>
-      Object.assign(makeSaveContents(), {
-        mzfmState: MZFM.gameState,
-      })
-    DataManager.extractSaveContents = (contents) => {
-      extractSaveContents(contents)
-      MZFM.gameState = (contents as { mzfmState?: Record<string, unknown> }).mzfmState || {}
+    if (isRM()) {
+      const { makeSaveContents, extractSaveContents } = DataManager
+      DataManager.makeSaveContents = () =>
+        Object.assign(makeSaveContents(), {
+          mzfmState: MZFM.gameState,
+        })
+      DataManager.extractSaveContents = (contents) => {
+        extractSaveContents(contents)
+        MZFM.gameState = (contents as { mzfmState?: Record<string, unknown> }).mzfmState || {}
+      }
     }
 
     return {

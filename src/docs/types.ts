@@ -1,4 +1,4 @@
-import { MZFMCommand, MZFMPlugin } from "./types"
+import { MZFMCommand, MZFMPlugin } from "../types"
 
 type ExtractArrayElement<T> = T extends (infer TElement)[] ? TElement : never
 type ExtractCommandArgs<T> = T extends MZFMCommand<infer TArgs> ? TArgs : never

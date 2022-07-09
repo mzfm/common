@@ -1,4 +1,4 @@
-import { PluginDocsParameter } from "../doc-types"
+import { PluginDocsParameter } from "./types"
 
 export const docsEnabled = (
   text: string,
