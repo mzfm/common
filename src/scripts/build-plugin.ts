@@ -175,9 +175,11 @@ const main = async () => {
   program
     .description("Builds a plugin for RPG Maker MZ")
     .option("-w, --watch", "Watch for changes and rebuild")
+    .option("--minify", "Minify the output")
     .option("--copyto <path>", "Copy the plugin to the specified path")
     .parse(process.argv)
   const opts = program.opts()
+  const { watch, minify, copyto } = opts
   const projectDir = findProjectDir(process.cwd())
   if (projectDir === null) {
     console.error("Could not find project directory")
@@ -193,6 +195,7 @@ const main = async () => {
     format: "iife",
     bundle: true,
     watch: false,
+    minify,
     target: "esnext",
     platform: "node",
     treeShaking: true,
@@ -234,7 +237,8 @@ const main = async () => {
     const project = (await import(docsfile)).default as PluginDocs<unknown>
     const docs: (string | undefined)[] = [makeComments(project.copyright), ...makeDocs(project)]
 
-    const outfile = path.join(projectDir, "dist", `${project.name.replace("/", "-")}.js`)
+    const filename = project.name.replace("/", "-")
+    const outfile = path.join(projectDir, "dist", `${filename}${minify ? ".min" : ""}.js`)
     buildOptions.outfile = outfile
     buildOptions.banner = {
       js: docs.filter((x) => x !== undefined).join("\n\n"),
@@ -242,10 +246,9 @@ const main = async () => {
 
     await esbuild.build(buildOptions)
     console.log(`Plugin bundled in ${outfile}`)
-    const copyTo = opts.copyto
-    if (copyTo) {
-      console.log(`Copying plugin to ${copyTo}`)
-      fs.copyFileSync(outfile, path.join(copyTo, path.basename(outfile)))
+    if (copyto) {
+      console.log(`Copying plugin to ${copyto}`)
+      fs.copyFileSync(outfile, path.join(copyto, path.basename(outfile)))
     }
   }
   try {
@@ -253,7 +256,6 @@ const main = async () => {
   } catch (e) {
     console.error(e)
   }
-  const watch = opts.watch
   if (watch) {
     console.log("Watching for changes...")
     const watcher = chokidar.watch([path.join(projectDir, "src")])
