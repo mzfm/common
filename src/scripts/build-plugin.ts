@@ -43,7 +43,10 @@ const updateDocs = (docs: string[], key: string, value?: unknown, stringify = fa
       stringify = true
     }
   }
-  docs.push(`@${key} ${stringify ? JSON.stringify(value) : value}`)
+  const v = stringify ? JSON.stringify(value) : String(value)
+  const lines = v.split("\n")
+  docs.push(`@${key} ${lines[0]}`)
+  docs.push(...lines.slice(1))
 }
 
 const getType = <T>(
@@ -140,7 +143,7 @@ const makeStructDocs = (structs: Record<string, PluginStructDocs<unknown>>): (st
 
 const makeDocs = <T>(project: PluginDocs<T>): (string | undefined)[] => {
   const docs: string[] = [""]
-  updateDocs(docs, "plugindesc", project.description)
+  updateDocs(docs, "plugindesc", `${project.description}\n[${project.name}]`)
   if (project.author) {
     const author = project.author.split("<")[0]
     updateDocs(docs, "author", author)

@@ -25,7 +25,13 @@ export class MZFMPlugin<
     public initialize?: () => void | Promise<void>
   ) {}
 
+  public get actualName(): string {
+    const { name } = this
+    const p = $plugins.filter((p) => p.description.includes(`[${name}]`))[0]
+    return p ? p.name : name
+  }
+
   get params(): TParams {
-    return this._params || (this._params = parseArgs<TParams>(PluginManager.parameters(this.name)))
+    return this._params || (this._params = parseArgs<TParams>(PluginManager.parameters(this.actualName)))
   }
 }
